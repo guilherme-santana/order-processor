@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: orders-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: http://order-service:8080
+          predicates:
+            - Path=/orders/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: POST
+            - AddRequestHeader=X-Service, Order
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
