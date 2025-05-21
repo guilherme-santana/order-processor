@@ -11,6 +11,7 @@ public class Order {
     private String clientId;
     private BigDecimal totalValue;
     private ZonedDateTime dateCreated;
+    private ZonedDateTime dateUpdate;
     private OrderStatus status;
 
     public Order(String id, String clientId, BigDecimal totalValue) {
@@ -19,6 +20,17 @@ public class Order {
         this.totalValue = totalValue;
         this.dateCreated = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
         this.status = OrderStatus.PENDING_PAYMENT;
+    }
+
+    public Order(String id, String clientId, BigDecimal totalValue, OrderStatus status) {
+        this.id = id;
+        this.clientId = clientId;
+        this.totalValue = totalValue;
+        this.status = status;
+    }
+
+    public Order(){
+
     }
 
     public String getId() {
@@ -59,5 +71,13 @@ public class Order {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public ZonedDateTime getDateUpdate() {
+        return dateUpdate;
+    }
+
+    public void setDateUpdate(ZonedDateTime dateUpdate) {
+        this.dateUpdate = dateUpdate;
     }
 }

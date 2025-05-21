@@ -20,6 +20,18 @@ spring:
                 methods: POST
             - AddRequestHeader=X-Service, Order
 
+        - id: shipping-service
+          uri: http://shipping-service:8083
+          predicates:
+            - Path=/shipping/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: POST
+            - AddRequestHeader=X-Service, Shipping
+
 management:
   endpoints:
     web:

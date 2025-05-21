@@ -16,14 +16,24 @@ public class OrderEntity {
     private String clientId;
     private BigDecimal totalValue;
     private ZonedDateTime dateCreated;
+    private ZonedDateTime dateUpdate;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    public OrderEntity(String id, String clientId, BigDecimal totalValue, ZonedDateTime dateCreated, OrderStatus status) {
+    public ZonedDateTime getDateUpdate() {
+        return dateUpdate;
+    }
+
+    public void setDateUpdate(ZonedDateTime dateUpdate) {
+        this.dateUpdate = dateUpdate;
+    }
+
+    public OrderEntity(String id, String clientId, BigDecimal totalValue, ZonedDateTime dateCreated, ZonedDateTime dateUpdate, OrderStatus status) {
         this.id = id;
         this.clientId = clientId;
         this.totalValue = totalValue;
         this.dateCreated = dateCreated;
+        this.dateUpdate = dateUpdate;
         this.status = status;
     }
 

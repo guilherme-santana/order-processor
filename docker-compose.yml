@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
 
-  postgres:
+  order-service-db:
     image: postgres:15
     container_name: order-db
     environment:
@@ -12,7 +12,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - order_pgdata:/var/lib/postgresql/data
+    networks:
+      - order-net
+
+  shipping-service-db:
+    image: postgres:15
+    container_name: shipping-db
+    environment:
+      POSTGRES_DB: shipping
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - shipping_pgdata:/var/lib/postgresql/data
     networks:
       - order-net
 
@@ -22,9 +36,31 @@ services:
       context: ./order-service
       dockerfile: Dockerfile
     depends_on:
-      - postgres
+      - order-service-db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/order
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-service-db:5432/order
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    networks:
+      - order-net
+
+  payment-service:
+    image: payment-service
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    networks:
+      - order-net
+
+  shipping-service:
+    image: shipping-service
+    build:
+      context: ./shipping-service
+      dockerfile: Dockerfile
+    depends_on:
+      - shipping-service-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://shipping-service-db:5432/shipping
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
     networks:
@@ -66,8 +102,35 @@ services:
     networks:
       - order-net
 
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.1
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+    networks:
+      - order-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8082:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+    networks:
+      - order-net
+
 volumes:
-  pgdata:
+  order_pgdata:
+  shipping_pgdata:
 
 networks:
   order-net:

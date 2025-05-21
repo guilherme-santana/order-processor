@@ -3,10 +3,31 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/order
+    url: jdbc:postgresql://order-service-db:5432/order
     username: postgres
     password: postgres
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        schema.registry.url: http://schema-registry:8081
+    consumer:
+      group-id: order-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        schema.registry.url: http://schema-registry:8081
+        specific.avro.reader: true
+
+
+kafka:
+  topics:
+    order-created: order-events
+    order-payment-processed: payment-events

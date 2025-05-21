@@ -1,0 +1,10 @@
+{
+  "namespace": "com.payments.avro",
+  "type": "record",
+  "name": "OrderPaymentProcessed",
+  "fields": [
+    { "name": "orderId", "type": "string" },
+    { "name": "paymentStatus", "type": { "type": "enum", "name": "PaymentStatus", "symbols": ["APPROVED", "DECLINED"] } },
+    { "name": "processedAt", "type": { "type": "long", "logicalType": "timestamp-millis" } }
+  ]
+}

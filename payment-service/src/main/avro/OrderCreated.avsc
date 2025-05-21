@@ -1,0 +1,27 @@
+{
+  "namespace": "com.orders.avro",
+  "type": "record",
+  "name": "OrderCreated",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "clientId",
+      "type": "string"
+    },
+    {
+      "name": "totalValue",
+      "type": "string"
+    },
+    {
+      "name": "status",
+      "type": "string"
+    },
+    {
+      "name": "dateCreated",
+      "type": "string"
+    }
+  ]
+}
