@@ -1,0 +1,10 @@
+{
+  "namespace": "com.shipping.avro",
+  "type": "record",
+  "name": "ShippingProcessed",
+  "fields": [
+    { "name": "orderId", "type": "string" },
+    { "name": "shippingStatus", "type": { "type": "enum", "name": "ShippingStatus", "symbols": ["PENDING_SHIPMENT", "SENT", "CANCELED", "DECLINED"] } },
+    { "name": "processedAt", "type": { "type": "long", "logicalType": "timestamp-millis" } }
+  ]
+}

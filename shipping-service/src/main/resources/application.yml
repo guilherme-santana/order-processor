@@ -30,3 +30,4 @@ spring:
 kafka:
   topics:
     order-payment-processed: payment-events
+    shippingProcessed: shipping-events

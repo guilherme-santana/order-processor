@@ -35,8 +35,8 @@ public class PaymentProcessPublisher implements PublishPaymentProcessed {
                 .exceptionally(ex -> {
                     logger.error("M=publishPaymentProcessed message: Erro ao enviar o evento: {}", ex);
                     return null;
-                })
+                });
 
-        ;
+
     }
 }
