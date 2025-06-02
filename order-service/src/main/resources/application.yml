@@ -31,3 +31,4 @@ kafka:
   topics:
     order-created: order-events
     order-payment-processed: payment-events
+    shippingProcessed: shipping-events

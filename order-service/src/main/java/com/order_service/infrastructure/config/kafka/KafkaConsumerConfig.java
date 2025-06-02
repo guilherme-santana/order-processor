@@ -1,6 +1,7 @@
 package com.order_service.infrastructure.config.kafka;
 
 import com.payments.avro.OrderPaymentProcessed;
+import com.shipping.avro.ShippingProcessed;
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
@@ -22,23 +23,43 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Bean
-    public ConsumerFactory<String, OrderPaymentProcessed> OrderPaymentProcessedConsumerFactory() {
+    @Value("${spring.kafka.consumer.properties.schema.registry.url}")
+    private String schemaRegistryUrl;
+
+    private Map<String, Object> commonConsumerProps() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "order-service-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
-        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://schema-registry:8081");
+        props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
         props.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
+        return props;
+    }
 
-        return new DefaultKafkaConsumerFactory<>(props);
+    @Bean
+    public ConsumerFactory<String, OrderPaymentProcessed> orderPaymentProcessedConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(commonConsumerProps());
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderPaymentProcessed> orderPaymentProcessedKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, OrderPaymentProcessed> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(OrderPaymentProcessedConsumerFactory());
+        ConcurrentKafkaListenerContainerFactory<String, OrderPaymentProcessed> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(orderPaymentProcessedConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, ShippingProcessed> shippingProcessedConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(commonConsumerProps());
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, ShippingProcessed> shippingProcessedKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ShippingProcessed> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(shippingProcessedConsumerFactory());
         return factory;
     }
 }

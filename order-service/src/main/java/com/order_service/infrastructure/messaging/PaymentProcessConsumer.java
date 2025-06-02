@@ -1,6 +1,6 @@
 package com.order_service.infrastructure.messaging;
 
-import com.order_service.application.UpdatePaymentStatusUseCase;
+import com.order_service.application.UpdateStatusUseCase;
 import com.payments.avro.OrderPaymentProcessed;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 public class PaymentProcessConsumer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final UpdatePaymentStatusUseCase updatePaymentStatusUseCase;
+    private final UpdateStatusUseCase updateStatusUseCase;
 
-    public PaymentProcessConsumer(UpdatePaymentStatusUseCase updatePaymentStatusUseCase) {
-        this.updatePaymentStatusUseCase = updatePaymentStatusUseCase;
+    public PaymentProcessConsumer(UpdateStatusUseCase updateStatusUseCase) {
+        this.updateStatusUseCase = updateStatusUseCase;
     }
 
     @KafkaListener(
@@ -26,6 +26,6 @@ public class PaymentProcessConsumer {
     public void listen(ConsumerRecord<String, OrderPaymentProcessed> consumerRecord) {
         OrderPaymentProcessed orderPaymentProcessed = consumerRecord.value();
         logger.info("M=listen message: Evento Recebido: {}", orderPaymentProcessed);
-        updatePaymentStatusUseCase.execute(orderPaymentProcessed.getOrderId(), orderPaymentProcessed.getPaymentStatus().toString());
+        updateStatusUseCase.execute(orderPaymentProcessed.getOrderId(), orderPaymentProcessed.getPaymentStatus().toString());
     }
 }
